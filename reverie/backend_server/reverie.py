@@ -598,15 +598,60 @@ class ReverieServer:
         pass
 
 
-if __name__ == '__main__':
-  # rs = ReverieServer("base_the_ville_isabella_maria_klaus", 
-  #                    "July1_the_ville_isabella_maria_klaus-step-3-1")
-  # rs = ReverieServer("July1_the_ville_isabella_maria_klaus-step-3-20", 
-  #                    "July1_the_ville_isabella_maria_klaus-step-3-21")
-  # rs.open_server()
+def list_simulations():
+  """List available simulations from storage directory.
+  Returns base simulations first, then others sorted alphabetically."""
+  storage_path = f"{fs_storage}"
+  base_sims = []
+  other_sims = []
+  try:
+    for name in os.listdir(storage_path):
+      if os.path.isdir(os.path.join(storage_path, name)):
+        if name.startswith("base_"):
+          base_sims.append(name)
+        else:
+          other_sims.append(name)
+  except:
+    pass
+  return sorted(base_sims) + sorted(other_sims)
 
-  origin = input("Enter the name of the forked simulation: ").strip()
-  target = input("Enter the name of the new simulation: ").strip()
+
+def select_simulation():
+  """Interactive menu to select a simulation."""
+  sims = list_simulations()
+  if not sims:
+    print("No simulations found!")
+    return None
+
+  print("\nAvailable simulations:")
+  print("-" * 40)
+  for i, sim in enumerate(sims, 1):
+    print(f"  {i}. {sim}")
+  print("-" * 40)
+  print("Enter a number to select, or type a name directly.")
+
+  choice = input("\nFork from simulation: ").strip()
+
+  # If it's a number, use it as index
+  if choice.isdigit():
+    idx = int(choice) - 1
+    if 0 <= idx < len(sims):
+      return sims[idx]
+    else:
+      print(f"Invalid selection. Using: {sims[0]}")
+      return sims[0]
+
+  # Otherwise treat as direct name
+  return choice
+
+
+if __name__ == '__main__':
+  origin = select_simulation()
+  if not origin:
+    exit(1)
+
+  print(f"\nForking from: {origin}")
+  target = input("Enter name for new simulation: ").strip()
 
   rs = ReverieServer(origin, target)
   rs.open_server()

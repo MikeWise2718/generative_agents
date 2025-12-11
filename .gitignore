@@ -1,4 +1,7 @@
 reverie/backend_server/utils.py
+
+# uv
+.venv/
 frontend_server/settings/local.py
 storage/*
 static_dirs/*
