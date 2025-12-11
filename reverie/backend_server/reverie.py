@@ -50,12 +50,17 @@ class ReverieServer:
     self.fork_sim_code = fork_sim_code
     fork_folder = f"{fs_storage}/{self.fork_sim_code}"
 
-    # <sim_code> indicates our current simulation. The first step here is to 
-    # copy everything that's in <fork_sim_code>, but edit its 
-    # reverie/meta/json's fork variable. 
+    # <sim_code> indicates our current simulation. The first step here is to
+    # copy everything that's in <fork_sim_code>, but edit its
+    # reverie/meta/json's fork variable.
     self.sim_code = sim_code
     sim_folder = f"{fs_storage}/{self.sim_code}"
     copyanything(fork_folder, sim_folder)
+
+    # Ensure movement directory exists
+    movement_folder = f"{sim_folder}/movement"
+    if not os.path.exists(movement_folder):
+      os.makedirs(movement_folder)
 
     with open(f"{sim_folder}/reverie/meta.json") as json_file:  
       reverie_meta = json.load(json_file)
