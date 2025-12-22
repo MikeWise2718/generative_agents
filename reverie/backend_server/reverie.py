@@ -34,6 +34,7 @@ from global_methods import *
 from utils import *
 from maze import *
 from persona.persona import *
+from persona.prompt_template import llm_config
 
 ##############################################################################
 #                                  REVERIE                                   #
@@ -432,6 +433,10 @@ class ReverieServer:
     print ("clarify that these agents lack human-like agency, consciousness,")
     print ("and independent decision-making.\n---")
 
+    # Initialize the LLM API (OpenRouter or OpenAI)
+    llm_config.init_llm_api()
+    print("---")
+
     # <sim_folder> points to the current simulation folder.
     sim_folder = f"{fs_storage}/{self.sim_code}"
 
@@ -466,11 +471,13 @@ class ReverieServer:
           # Example: save
           self.save()
 
-        elif sim_command[:3].lower() == "run": 
+        elif sim_command[:3].lower() == "run":
           # Runs the number of steps specified in the prompt.
           # Example: run 1000
           int_count = int(sim_command.split()[-1])
+          llm_config.reset_usage_stats()
           rs.start_server(int_count)
+          llm_config.print_usage_summary()
 
         elif ("print persona schedule" 
               in sim_command[:22].lower()): 

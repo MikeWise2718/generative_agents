@@ -3,15 +3,15 @@ Author: Joon Sung Park (joonspk@stanford.edu)
 
 File: gpt_structure.py
 Description: Wrapper functions for calling OpenAI APIs.
+Supports both OpenAI direct and OpenRouter APIs via llm_config.
 """
 import json
 import random
 import openai
-import time 
+import time
 
 from utils import *
-
-openai.api_key = openai_api_key
+from persona.prompt_template import llm_config
 
 def temp_sleep(seconds=0.1):
   time.sleep(seconds)
@@ -20,9 +20,10 @@ def ChatGPT_single_request(prompt):
   temp_sleep()
 
   completion = openai.ChatCompletion.create(
-    model="gpt-4o-mini",
+    model=llm_config.get_model_name("gpt-4o-mini"),
     messages=[{"role": "user", "content": prompt}]
   )
+  llm_config.track_usage(completion)
   return completion["choices"][0]["message"]["content"]
 
 
@@ -39,9 +40,10 @@ def GPT4_request(prompt):
 
   try:
     completion = openai.ChatCompletion.create(
-      model="gpt-4o",
+      model=llm_config.get_model_name("gpt-4o"),
       messages=[{"role": "user", "content": prompt}]
     )
+    llm_config.track_usage(completion)
     return completion["choices"][0]["message"]["content"]
 
   except Exception as e:
@@ -56,9 +58,10 @@ def ChatGPT_request(prompt):
   """
   try:
     completion = openai.ChatCompletion.create(
-      model="gpt-4o-mini",
+      model=llm_config.get_model_name("gpt-4o-mini"),
       messages=[{"role": "user", "content": prompt}]
     )
+    llm_config.track_usage(completion)
     return completion["choices"][0]["message"]["content"]
 
   except Exception as e:
@@ -187,15 +190,16 @@ def GPT_request(prompt, gpt_parameter):
   temp_sleep()
   try:
     response = openai.ChatCompletion.create(
-      model="gpt-4o-mini",
+      model=llm_config.get_model_name("gpt-4o-mini"),
       messages=[{"role": "user", "content": prompt}],
       temperature=gpt_parameter["temperature"],
       max_tokens=gpt_parameter["max_tokens"],
       top_p=gpt_parameter["top_p"],
       frequency_penalty=gpt_parameter["frequency_penalty"],
       presence_penalty=gpt_parameter["presence_penalty"],
-      stop=gpt_parameter["stop"],
+      stop=gpt_parameter["stop"]
     )
+    llm_config.track_usage(response)
     return response["choices"][0]["message"]["content"]
   except Exception as e:
     print(f"GPT REQUEST ERROR: {e}")
@@ -255,8 +259,11 @@ def get_embedding(text, model="text-embedding-3-small"):
   text = text.replace("\n", " ")
   if not text:
     text = "this is blank"
-  return openai.Embedding.create(
-          input=[text], model=model)['data'][0]['embedding']
+  response = openai.Embedding.create(
+          input=[text],
+          model=llm_config.get_model_name(model))
+  llm_config.track_embedding_usage(response)
+  return response['data'][0]['embedding']
 
 
 if __name__ == '__main__':
