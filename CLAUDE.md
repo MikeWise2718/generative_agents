@@ -2,6 +2,10 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## User Preferences
+
+- **Screenshots:** When asked to read the latest screenshot, look in `C:\Users\mike\Pictures\Screenshots` for the most recent image.
+
 ## Project Overview
 
 This is the research implementation for "Generative Agents: Interactive Simulacra of Human Behavior" - a simulation framework where AI agents (personas) exhibit believable human behaviors in a virtual town called Smallville. The system uses LLMs to generate agent behaviors based on memory, perception, and planning.

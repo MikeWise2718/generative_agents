@@ -8,8 +8,8 @@ Variables:
 <commentblockmarker>###</commentblockmarker>
 Task: Turn the input into (subject, predicate, object). 
 
-Input: Sam Johnson is eating breakfast. 
-Output: (Dolores Murphy, eat, breakfast) 
+Input: Sam Johnson is eating breakfast.
+Output: (Sam Johnson, eat, breakfast) 
 --- 
 Input: Joon Park is brewing coffee.
 Output: (Joon Park, brew, coffee)
