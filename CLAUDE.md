@@ -6,24 +6,32 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 This is the research implementation for "Generative Agents: Interactive Simulacra of Human Behavior" - a simulation framework where AI agents (personas) exhibit believable human behaviors in a virtual town called Smallville. The system uses LLMs to generate agent behaviors based on memory, perception, and planning.
 
+This fork has been modernized to use `uv` package manager and current OpenAI APIs (gpt-4o-mini, gpt-4o instead of deprecated text-davinci models).
+
 ## Running the Simulation
 
 **Prerequisites:**
-- Python 3.9.12
+- Python 3.9.x (requires-python = ">=3.9,<3.10")
+- `uv` package manager
 - OpenAI API key configured in `reverie/backend_server/utils.py`
+
+**Install dependencies:**
+```bash
+uv sync
+```
 
 **Start the environment server (Django frontend):**
 ```bash
 cd environment/frontend_server
-python manage.py runserver
+uv run python manage.py runserver
 # Access at http://localhost:8000/
 ```
 
 **Start the simulation server (in separate terminal):**
 ```bash
 cd reverie/backend_server
-python reverie.py
-# Follow prompts to specify simulation name
+uv run python reverie.py
+# Select simulation by number from menu, then enter new simulation name
 ```
 
 **Simulation commands (at "Enter option:" prompt):**
@@ -34,6 +42,12 @@ python reverie.py
 - `print persona schedule <Name>` - View agent's daily schedule
 - `print current time` - Show simulation time
 - `call -- analysis <Name>` - Interactive chat with agent
+- `call -- load history the_ville/<history_file>.csv` - Load agent memory history
+
+**Browser URLs:**
+- `http://localhost:8000/simulator_home` - Live simulation view
+- `http://localhost:8000/replay/<sim-name>/<step>` - Replay saved simulation
+- `http://localhost:8000/demo/<sim-name>/<step>/<speed>` - Demo with character sprites (1-5 speed)
 
 ## Architecture
 
@@ -75,8 +89,13 @@ python reverie.py
 
 ### LLM Integration (`persona/prompt_template/`)
 
-- **gpt_structure.py** - OpenAI API wrapper functions
+- **gpt_structure.py** - OpenAI API wrapper functions (uses ChatCompletion API)
 - **run_gpt_prompt.py** - Prompt templates for all cognitive functions
+
+**Model usage:**
+- `gpt-4o-mini` - Default for most tasks (schedules, actions, locations)
+- `gpt-4o` - Complex reasoning (reflection, conversations)
+- `text-embedding-3-small` - Memory retrieval embeddings
 
 ## Data Flow
 
@@ -96,3 +115,17 @@ python reverie.py
 
 - `base_the_ville_isabella_maria_klaus` - 3 agents (Isabella Rodriguez, Maria Lopez, Klaus Mueller)
 - `base_the_ville_n25` - 25 agents
+
+## Cost Estimates
+
+- 3 agents, 100 steps (~17 min game time): $0.05-0.20
+- 3 agents, 1 game day (~8,640 steps): $0.50-2.00
+- 25 agents, 1 game day: $5-15
+
+## Customization
+
+**History files** for initializing agent memories are in `environment/frontend_server/static_dirs/assets/the_ville/`:
+- `agent_history_init_n25.csv` - For 25-agent sim
+- `agent_history_init_n3.csv` - For 3-agent sim
+
+**Creating new base simulations:** Copy an existing base simulation folder and edit using the [Tiled](https://www.mapeditor.org/) map editor if changing agents or map layout.
