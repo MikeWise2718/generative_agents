@@ -17,7 +17,16 @@ This fork has been modernized to use `uv` package manager and current OpenAI API
 **Prerequisites:**
 - Python 3.9.x (requires-python = ">=3.9,<3.10")
 - `uv` package manager
-- OpenAI API key configured in `reverie/backend_server/utils.py`
+- API key configured via environment variable (one of):
+  - OpenRouter (recommended):
+    ```bash
+    export OPENROUTER_API_KEY="sk-or-your-key-here"
+    export OPENROUTER_MODEL="anthropic/claude-3.5-sonnet"  # optional, defaults to openai/gpt-4o-mini
+    ```
+  - OpenAI direct:
+    ```bash
+    export OPENAI_API_KEY="sk-your-key-here"
+    ```
 
 **Install dependencies:**
 ```bash
@@ -44,6 +53,7 @@ uv run python reverie.py
 - `fin` - Save and exit
 - `exit` - Exit without saving
 - `print persona schedule <Name>` - View agent's daily schedule
+- `print all persona schedule` - View all agents' schedules
 - `print current time` - Show simulation time
 - `call -- analysis <Name>` - Interactive chat with agent
 - `call -- load history the_ville/<history_file>.csv` - Load agent memory history
@@ -126,6 +136,8 @@ uv run python reverie.py
 - 3 agents, 1 game day (~8,640 steps): $0.50-2.00
 - 25 agents, 1 game day: $5-15
 
+After each `run` command, a usage summary is displayed showing total requests, tokens, and estimated cost.
+
 ## Customization
 
 **History files** for initializing agent memories are in `environment/frontend_server/static_dirs/assets/the_ville/`:
@@ -133,3 +145,7 @@ uv run python reverie.py
 - `agent_history_init_n3.csv` - For 3-agent sim
 
 **Creating new base simulations:** Copy an existing base simulation folder and edit using the [Tiled](https://www.mapeditor.org/) map editor if changing agents or map layout.
+
+## Additional Documentation
+
+See `wise_docs/` for detailed documentation on all changes made in this fork.

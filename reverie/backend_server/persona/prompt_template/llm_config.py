@@ -3,9 +3,9 @@ LLM Configuration and API abstraction layer.
 Supports OpenAI direct and OpenRouter APIs.
 
 Usage:
-    Set OPENROUTER_API_KEY env var to use OpenRouter.
+    Set OPENROUTER_API_KEY env var to use OpenRouter (recommended).
     Optionally set OPENROUTER_MODEL to override the default model.
-    If no OpenRouter key, falls back to OpenAI via utils.py.
+    Alternatively, set OPENAI_API_KEY for direct OpenAI access.
 """
 import os
 import openai
@@ -75,16 +75,12 @@ def init_llm_api():
         _api_type = "openai"
         _current_model = "gpt-4o-mini"
 
-        # Try environment variable first, then utils.py
+        # API key must be set via environment variable
         openai_key = os.environ.get("OPENAI_API_KEY")
         if openai_key:
             openai.api_key = openai_key
         else:
-            try:
-                from utils import openai_api_key
-                openai.api_key = openai_api_key
-            except ImportError:
-                print("WARNING: No API key found. Set OPENROUTER_API_KEY or OPENAI_API_KEY")
+            print("WARNING: No API key found. Set OPENROUTER_API_KEY or OPENAI_API_KEY environment variable.")
 
         print(f"Using OpenAI API (model: {_current_model})")
 
